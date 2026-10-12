@@ -688,3 +688,33 @@ html[data-theme="dark"]{--red-text:#f8262f;--green-text:#40b87a}
 .principles span,.catalog-grid article>span,.workflow-node small,.workflow-state small,.flow-step.done small,.flow-step.active small{color:var(--red-text)}
 .approval-flow article>span{color:var(--red-on-dark)}
 .tech-strip:focus-visible{outline:2px solid var(--red-text);outline-offset:4px}
+
+/* ===== Internal /team status dashboard (noindex, token-gated). Self-contained; remove with app/team. ===== */
+.team-page{width:min(1000px,100% - 32px);margin:0 auto;padding:40px 0 80px;background:var(--background);color:var(--foreground);min-height:100vh}
+.team-head h1{margin:0 0 8px;font-size:clamp(1.8rem,5vw,2.6rem);letter-spacing:-.03em}
+.team-head p{margin:6px 0;color:var(--muted);max-width:70ch;line-height:1.55}
+.team-head code{font-size:.9em}
+.team-head .team-sample{color:var(--foreground);border:1px dashed var(--red-text);padding:10px 12px;border-radius:8px}
+.team-counters{list-style:none;margin:24px 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.team-counters li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.team-counters strong{display:block;font-size:1.8rem;line-height:1}
+.team-counters span{color:var(--muted);font-size:.85rem}
+.team-blocked-panel{border:1px solid var(--red-text);background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:24px}
+.team-blocked-panel h2,.team-person h2{margin:0 0 8px;font-size:1.15rem}
+.team-blocked-panel ul,.team-person ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.team-blocked-panel p,.team-task p{margin:4px 0 0;color:var(--muted);font-size:.92rem;overflow-wrap:anywhere}
+.team-person h2 small{display:block;color:var(--muted);font-weight:400;font-size:.85rem;margin-top:2px}
+.team-person{margin-top:22px}
+.team-filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px}
+.team-filters label{display:grid;gap:4px;font-size:.85rem;color:var(--muted);flex:1 1 160px}
+.team-filters select{min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--foreground);font:inherit}
+.team-filters select:focus-visible{outline:2px solid var(--red-text);outline-offset:2px}
+.team-task{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.team-task-top{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:flex-start}
+.team-badge{font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.team-planned{color:var(--muted)}
+.team-in-progress{color:#1a56b0}
+.team-badge.team-blocked{color:var(--red-text)}
+.team-done{color:var(--green-text)}
+html[data-theme="dark"] .team-in-progress{color:#7db0ff}
+.team-empty{color:var(--muted)}
