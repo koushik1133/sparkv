@@ -34,11 +34,14 @@ export default function Telemetry() {
       if (hit) trackEvent(hit.name, hit.props);
     };
     const onLead = () => trackEvent("lead_submitted");
+    const onApplication = () => trackEvent("application_submitted");
     document.addEventListener("click", onClick, { capture: true });
     window.addEventListener("sparkv:lead", onLead);
+    window.addEventListener("sparkv:application", onApplication);
     return () => {
       document.removeEventListener("click", onClick, { capture: true });
       window.removeEventListener("sparkv:lead", onLead);
+      window.removeEventListener("sparkv:application", onApplication);
     };
   }, []);
 
