@@ -31,6 +31,9 @@ export const BING_SITE_VERIFICATION = "";
 /** Date the public content was last meaningfully revised (used by the sitemap and schema). */
 export const CONTENT_UPDATED = "2026-10-07";
 
+/** Date the legal pages (privacy, terms, cookies) were last revised. */
+export const LEGAL_UPDATED = "2026-10-12";
+
 /**
  * Only production deployments should be indexed. Vercel preview URLs and local builds must
  * not compete with, or be confused for, the canonical site.

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/services";
-import { CONTENT_UPDATED, absoluteUrl } from "@/lib/site";
+import { CONTENT_UPDATED, LEGAL_UPDATED, absoluteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Only canonical, indexable, 200-status URLs. lastModified is the date the content was
@@ -9,7 +9,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), lastModified, priority: 1 },
     { url: absoluteUrl("/services"), lastModified, priority: 0.8 },
-    { url: absoluteUrl("/privacy"), lastModified, priority: 0.3 },
+    { url: absoluteUrl("/privacy"), lastModified: new Date(LEGAL_UPDATED), priority: 0.3 },
+    { url: absoluteUrl("/terms"), lastModified: new Date(LEGAL_UPDATED), priority: 0.3 },
+    { url: absoluteUrl("/cookies"), lastModified: new Date(LEGAL_UPDATED), priority: 0.3 },
     ...SERVICES.map((s) => ({ url: absoluteUrl(`/services/${s.slug}`), lastModified, priority: 0.7 })),
   ];
 }
