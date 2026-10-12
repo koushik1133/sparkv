@@ -11,7 +11,7 @@ export function formatLegalDate(iso: string) {
 }
 
 export function legalMetadata(path: string, title: string, description: string): Metadata {
-  const url = absoluteUrl(path);
+  const url = absoluteUrl(v2Path(path));
   return {
     title,
     description,
@@ -25,7 +25,7 @@ export function legalMetadata(path: string, title: string, description: string):
 export function LegalPage({
   path, title, label, description, intro, children,
 }: { path: string; title: string; label: string; description: string; intro: string; children: ReactNode }) {
-  const url = absoluteUrl(path);
+  const url = absoluteUrl(v2Path(path));
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
