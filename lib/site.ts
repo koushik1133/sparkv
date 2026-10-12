@@ -42,6 +42,13 @@ export const IS_INDEXABLE = process.env.VERCEL_ENV
   ? process.env.VERCEL_ENV === "production"
   : process.env.NODE_ENV === "production";
 
+/**
+ * Dual-site switch (see docs/DUAL-SITE.md). V1 is the original site at "/"; V2 is the redesign
+ * served under "/2". While false, every /2 page is noindex (robots meta + X-Robots-Tag header),
+ * robots.txt disallows /2 and the sitemap lists V1 URLs only. Flip to true to let V2 be indexed.
+ */
+export const V2_INDEXABLE = false;
+
 export const OG_IMAGE = {
   url: "/opengraph-image",
   width: 1200,

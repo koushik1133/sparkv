@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { V2_INDEXABLE } from "./lib/site";
 
 // HSTS `preload` is deliberately omitted: it is a long-lived, hard-to-reverse commitment for every
 // subdomain and needs an explicit hstspreload.org submission decision by the domain owner.
@@ -18,12 +19,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },
   reactStrictMode: true,
+  // Two root layouts (V1 at "/", V2 at "/2") => unmatched URLs render app/global-not-found.tsx.
+  experimental: { globalNotFound: true },
   turbopack: {
     root: process.cwd(),
   },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // V2 (the /2 redesign preview) stays out of the index until V2_INDEXABLE is flipped (docs/DUAL-SITE.md).
+      ...(V2_INDEXABLE
+        ? []
+        : [{ source: "/2/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]),
       // The *.vercel.app alias serves the same site; keep it out of the index so only www.sparkv.si ranks.
       {
         source: "/:path*",

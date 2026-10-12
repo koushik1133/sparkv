@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Breadcrumbs, SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { Breadcrumbs, SiteFooter, SiteHeader } from "@/components/v2/site-chrome";
 import { JsonLd } from "@/components/json-ld";
 import { JOBS } from "@/lib/jobs";
 import { CONTENT_UPDATED, OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { v2Path } from "@/lib/v2";
 
 const TITLE = "Careers";
 const DESCRIPTION =
   "Open roles at SparkV: AI Engineer, Software Engineer, Forward Deployed Engineer and Video Editor. Remote, India-based. See how we hire and apply online.";
-const url = absoluteUrl("/careers");
+const url = absoluteUrl(v2Path("/careers"));
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -43,7 +44,7 @@ export default function CareersPage() {
         itemListElement: JOBS.map((j, i) => ({
           "@type": "ListItem",
           position: i + 1,
-          url: absoluteUrl(`/careers/${j.slug}`),
+          url: absoluteUrl(v2Path(`/careers/${j.slug}`)),
           name: j.title,
         })),
       },
@@ -51,7 +52,7 @@ export default function CareersPage() {
         "@type": "BreadcrumbList",
         "@id": `${url}#breadcrumb`,
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl(v2Path("/")) },
           { "@type": "ListItem", position: 2, name: "Careers", item: url },
         ],
       },
@@ -63,7 +64,7 @@ export default function CareersPage() {
       <JsonLd data={jsonLd} />
       <SiteHeader />
       <main id="main" className="sub-main">
-        <Breadcrumbs trail={[{ name: "Home", href: "/" }, { name: "Careers" }]} />
+        <Breadcrumbs trail={[{ name: "Home", href: v2Path("/") }, { name: "Careers" }]} />
         <header className="sub-hero">
           <p className="section-label"><span />CAREERS</p>
           <h1>Build software, AI and automation with SparkV</h1>
@@ -77,7 +78,7 @@ export default function CareersPage() {
           <ul className="job-list">
             {JOBS.map((j) => (
               <li key={j.slug}>
-                <Link href={`/careers/${j.slug}`} className="job-card">
+                <Link href={v2Path(`/careers/${j.slug}`)} className="job-card">
                   <span className="job-meta">{j.team} · {j.location}</span>
                   <strong>{j.title}</strong>
                   <span className="job-summary">{j.summary}</span>
@@ -104,7 +105,7 @@ export default function CareersPage() {
         <section aria-labelledby="your-data" className="job-prose">
           <h2 id="your-data">Your application data</h2>
           <p>
-            We use what you send only to assess your application. See the <Link href="/privacy#applicants">applicant section of our Privacy Notice</Link> for what we keep, for how long, and how to ask for deletion.
+            We use what you send only to assess your application. See the <Link href={v2Path("/privacy#applicants")}>applicant section of our Privacy Notice</Link> for what we keep, for how long, and how to ask for deletion.
           </p>
         </section>
       </main>

@@ -1,0 +1,1 @@
+export function SectionIntro({label,title,body}:{label:string;title:string;body?:string}){return <div className="section-intro"><p className="section-label"><span/>{label}</p><h2>{title}</h2>{body&&<p>{body}</p>}</div>}

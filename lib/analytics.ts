@@ -21,7 +21,7 @@ export function isProductionHost(hostname: string): boolean {
 /** Map a clicked anchor to an event, or null. Reads only href and ancestor ids. */
 export function classifyLink(a: HTMLAnchorElement, origin: string): { name: EventName; props: Props } | null {
   const raw = a.getAttribute("href") ?? "";
-  if (raw === "#contact" || raw === "/#contact") {
+  if (raw === "#contact" || raw === "/#contact" || raw === "/2#contact") {
     const section = a.closest("[id]:not(#main)")?.id ?? "unknown";
     return { name: "cta_click", props: { section } };
   }

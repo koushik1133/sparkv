@@ -1,5 +1,6 @@
 import { LegalPage, legalMetadata } from "@/components/legal-page";
 import { SITE_COUNTRY, SITE_EMAIL, SITE_NAME, SITE_REGION, SITE_URL } from "@/lib/site";
+import { v2Path } from "@/lib/v2";
 
 const TITLE = "Terms of Use";
 const DESCRIPTION =
@@ -20,7 +21,7 @@ export default function TermsPage() {
       <section aria-labelledby="accept">
         <h2 id="accept">1. Agreeing to these terms</h2>
         <p>
-          By using {SITE_URL.replace("https://", "")} (the &ldquo;Site&rdquo;), operated by {SITE_NAME} in {SITE_REGION}, {SITE_COUNTRY} (&ldquo;we&rdquo;, &ldquo;us&rdquo;), you agree to these terms and to our <a href="/privacy">Privacy Notice</a>. If you do not agree, please do not use the Site. You must be at least 18 years old, or use the Site with a parent or guardian, to enter into a binding agreement with us.
+          By using {SITE_URL.replace("https://", "")} (the &ldquo;Site&rdquo;), operated by {SITE_NAME} in {SITE_REGION}, {SITE_COUNTRY} (&ldquo;we&rdquo;, &ldquo;us&rdquo;), you agree to these terms and to our <a href={v2Path("/privacy")}>Privacy Notice</a>. If you do not agree, please do not use the Site. You must be at least 18 years old, or use the Site with a parent or guardian, to enter into a binding agreement with us.
         </p>
       </section>
 
@@ -35,7 +36,7 @@ export default function TermsPage() {
         <ul>
           <li>break any law, including the Information Technology Act, 2000 and rules under it;</li>
           <li>submit false, misleading, abusive or unlawful content through the contact form, or send spam;</li>
-          <li>probe, scan or test the Site&apos;s security, overload it, or interfere with its operation, other than through responsible disclosure as described in our <a href="/.well-known/security.txt">security.txt</a>;</li>
+          <li>probe, scan or test the Site&apos;s security, overload it, or interfere with its operation, other than through responsible disclosure as described in our <a href={v2Path("/.well-known/security.txt")}>security.txt</a>;</li>
           <li>scrape or copy the Site at a volume or in a way that harms it, or try to gain access to systems or data you are not authorised to see; or</li>
           <li>pretend to be another person or organisation.</li>
         </ul>

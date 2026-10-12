@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs, SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { Breadcrumbs, SiteFooter, SiteHeader } from "@/components/v2/site-chrome";
 import { JsonLd } from "@/components/json-ld";
 import { ApplyForm } from "@/components/apply-form";
 import { COMPENSATION_LINE, JOBS, getJob, type Job } from "@/lib/jobs";
 import { OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { v2Path } from "@/lib/v2";
 
 export const dynamicParams = false;
 
@@ -15,7 +16,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const job = getJob((await params).slug);
   if (!job) return {};
-  const url = absoluteUrl(`/careers/${job.slug}`);
+  const url = absoluteUrl(v2Path(`/careers/${job.slug}`));
   const title = `${job.title} - Careers`;
   return {
     title,
@@ -40,7 +41,7 @@ function descriptionHtml(job: Job) {
 }
 
 function jobPostingLd(job: Job) {
-  const url = absoluteUrl(`/careers/${job.slug}`);
+  const url = absoluteUrl(v2Path(`/careers/${job.slug}`));
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -68,8 +69,8 @@ function jobPostingLd(job: Job) {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "Careers", item: absoluteUrl("/careers") },
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl(v2Path("/")) },
+          { "@type": "ListItem", position: 2, name: "Careers", item: absoluteUrl(v2Path("/careers")) },
           { "@type": "ListItem", position: 3, name: job.title, item: url },
         ],
       },
@@ -86,7 +87,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       <JsonLd data={jobPostingLd(job)} />
       <SiteHeader />
       <main id="main" className="sub-main">
-        <Breadcrumbs trail={[{ name: "Home", href: "/" }, { name: "Careers", href: "/careers" }, { name: job.title }]} />
+        <Breadcrumbs trail={[{ name: "Home", href: v2Path("/") }, { name: "Careers", href: v2Path("/careers") }, { name: job.title }]} />
         <article>
           <header className="sub-hero">
             <p className="section-label"><span />{job.team.toUpperCase()}</p>

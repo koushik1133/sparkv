@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-// Gate for the internal /team dashboard. Returns 404 (not 401) so the route's existence is not
+// Gate for the internal /2/team dashboard. Returns 404 (not 401) so the route's existence is not
 // revealed. If TEAM_DASHBOARD_TOKEN is unset the route is always 404.
 const COOKIE = "team_token";
 
@@ -27,7 +27,7 @@ export function proxy(request: NextRequest) {
       httpOnly: true,
       sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-      path: "/team",
+      path: "/2/team",
       maxAge: 60 * 60 * 12,
     });
     res.headers.set("Cache-Control", "private, no-store");
@@ -43,4 +43,4 @@ export function proxy(request: NextRequest) {
   return new NextResponse(null, { status: 404 });
 }
 
-export const config = { matcher: ["/team", "/team/:path*"] };
+export const config = { matcher: ["/2/team", "/2/team/:path*"] };

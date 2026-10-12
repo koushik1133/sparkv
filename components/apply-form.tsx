@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import { v2Path } from "@/lib/v2";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const EXT = /\.(pdf|docx?|PDF|DOCX?)$/;
@@ -113,7 +114,7 @@ export function ApplyForm({ jobSlug, jobTitle, roleLinkLabel }: Props) {
         <legend>Consent</legend>
         <label className="ap-check">
           <input name="consent" type="checkbox" required {...a11y("consent")} />
-          <span>I have read the <a href="/privacy#applicants">applicant privacy notice</a> and agree that SparkV may use these details to assess my application. *</span>
+          <span>I have read the <a href={v2Path("/privacy#applicants")}>applicant privacy notice</a> and agree that SparkV may use these details to assess my application. *</span>
         </label>
         {msg("consent")}
       </fieldset>

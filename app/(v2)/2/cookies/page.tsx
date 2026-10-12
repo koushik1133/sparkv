@@ -1,5 +1,6 @@
 import { LegalPage, legalMetadata } from "@/components/legal-page";
 import { SITE_EMAIL, SITE_NAME } from "@/lib/site";
+import { v2Path } from "@/lib/v2";
 
 const TITLE = "Cookie & Storage Notice";
 const DESCRIPTION =
@@ -43,7 +44,7 @@ export default function CookiesPage() {
 
       <section aria-labelledby="analytics">
         <h2 id="analytics">Analytics and speed measurement</h2>
-        <p>On the live site we use Vercel Web Analytics to count page views and clicks in aggregate, and Vercel Speed Insights to measure how fast pages load. According to Vercel, these tools do not set cookies or store anything in your browser to identify you; a visit is recognised by a short-lived hash of the request that is discarded after 24 hours. We do not send your name, email address or form contents to them. See the <a href="/privacy">Privacy Notice</a> for more.</p>
+        <p>On the live site we use Vercel Web Analytics to count page views and clicks in aggregate, and Vercel Speed Insights to measure how fast pages load. According to Vercel, these tools do not set cookies or store anything in your browser to identify you; a visit is recognised by a short-lived hash of the request that is discarded after 24 hours. We do not send your name, email address or form contents to them. See the <a href={v2Path("/privacy")}>Privacy Notice</a> for more.</p>
       </section>
 
       <section aria-labelledby="consent">
