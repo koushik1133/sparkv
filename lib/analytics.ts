@@ -1,6 +1,6 @@
 // Thin, fail-safe wrapper around @vercel/analytics `track`. Never throws, never sends
 // personal data: callers pass only fixed event names and coarse, non-personal properties.
-export type EventName = "cta_click" | "email_click" | "outbound_click" | "lead_submitted" | "service_view";
+export type EventName = "cta_click" | "email_click" | "outbound_click" | "lead_submitted" | "application_submitted" | "service_view";
 type Props = Record<string, string | number | boolean | null>;
 
 export function trackEvent(name: EventName, props?: Props): void {
@@ -21,7 +21,7 @@ export function isProductionHost(hostname: string): boolean {
 /** Map a clicked anchor to an event, or null. Reads only href and ancestor ids. */
 export function classifyLink(a: HTMLAnchorElement, origin: string): { name: EventName; props: Props } | null {
   const raw = a.getAttribute("href") ?? "";
-  if (raw === "#contact" || raw === "/#contact") {
+  if (raw === "#contact" || raw === "/#contact" || raw === "/2#contact") {
     const section = a.closest("[id]:not(#main)")?.id ?? "unknown";
     return { name: "cta_click", props: { section } };
   }

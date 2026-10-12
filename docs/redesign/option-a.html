@@ -1,0 +1,218 @@
+<!doctype html>
+<!--
+RATIONALE (Option A: Editorial / precision dark)
+1. Type is the hero: one oversized grotesk headline does the work imagery usually does, so the page stays fast and honest.
+2. Monochrome ink and paper plus a single red (#f01822) used only for marks, rules and the primary action.
+3. Hairline grid (1px borders) gives an architectural, engineered feel that suits a build-and-ship studio.
+4. Motion is limited to a fade/rise on scroll and a hover underline; all of it is off under prefers-reduced-motion.
+5. Dark is the default look; light mode inverts to paper with a darker red (#c4121b) so text accents keep AA contrast.
+6. Proof section is labelled as concepts: no client names or metrics are invented; copy mirrors lib/services.ts.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>SparkV | Redesign Option A: Editorial / precision dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --fg:#f4f4f2; --muted:#a3a3a0; --line:#2a2a2d; --panel:#111113;
+  --red:#f01822; --red-text:#ff5a62; --on-red:#0a0a0b;
+  --sans:"Inter Tight",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --pad:clamp(16px,4vw,48px);
+}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f6f5f1; --fg:#0b0b0c; --muted:#55555a; --line:#d4d2cb; --panel:#ecebe5; --red:#c4121b; --red-text:#c4121b; --on-red:#fff}
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--red-text);outline-offset:3px}
+.wrap{max-width:1360px;margin:0 auto;padding:0 var(--pad)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono b{color:var(--red-text);font-weight:500}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.logo i{font-style:normal;color:var(--red-text)}
+nav{display:flex;gap:28px}
+nav a{font-size:14px;text-decoration:none;color:var(--muted);padding:8px 0}
+nav a:hover{color:var(--fg)}
+@media(max-width:720px){nav a:not(.cta-s){display:none}}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:var(--on-red);font-weight:600;text-decoration:none;padding:14px 22px;min-height:48px;border:1px solid var(--red);transition:background .2s,color .2s}
+.btn:hover{background:transparent;color:var(--red-text)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--fg);color:var(--fg)}
+.cta-s{color:var(--red-text);font-weight:600}
+section{border-bottom:1px solid var(--line);padding:clamp(56px,9vw,120px) 0}
+.hero{padding-top:clamp(48px,8vw,110px)}
+h1{font-size:clamp(44px,10.5vw,168px);line-height:.92;letter-spacing:-.045em;font-weight:700;margin:24px 0 40px;overflow-wrap:break-word}
+h1 em{font-style:normal;color:var(--red-text)}
+.lede{max-width:56ch;font-size:clamp(18px,2vw,22px);color:var(--muted)}
+.lede strong{color:var(--fg);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
+.meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);margin-top:clamp(48px,7vw,96px)}
+.meta div{padding:20px 20px 0 0}
+.meta div+div{border-left:1px solid var(--line);padding-left:20px}
+@media(max-width:620px){.meta{grid-template-columns:1fr}.meta div+div{border-left:0;border-top:1px solid var(--line);margin-top:20px;padding-left:0}}
+h2{font-size:clamp(32px,5.5vw,76px);line-height:1;letter-spacing:-.035em;font-weight:600;max-width:16ch;margin:16px 0 clamp(32px,5vw,64px)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)}
+.cell{padding:28px 24px 32px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px;min-height:320px;transition:background .25s}
+.cell:last-child{border-right:0}
+.cell:hover{background:var(--panel)}
+.cell h3{font-size:24px;letter-spacing:-.02em;line-height:1.15;font-weight:600}
+.cell p{color:var(--muted);font-size:16px}
+.cell ul{list-style:none;padding:0;margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.cell li{font-size:14px;color:var(--muted);padding:2px 0}
+.cell li::before{content:"+ ";color:var(--red-text)}
+.cell a{font-size:14px;text-decoration:none;border-bottom:1px solid var(--red);align-self:flex-start;padding:6px 0}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.cell:nth-child(2){border-right:0}.cell:nth-child(-n+2){border-bottom:1px solid var(--line)}.cell{min-height:0}}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}}
+ol.steps{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+ol.steps li{padding:28px 24px 32px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+ol.steps h3{font-size:22px;margin:10px 0 8px;font-weight:600;letter-spacing:-.02em}
+ol.steps p{color:var(--muted);font-size:16px}
+@media(max-width:900px){ol.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){ol.steps{grid-template-columns:1fr}}
+.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line)}
+.proof article{padding:28px 24px;border-right:1px solid var(--line)}
+.proof article:last-child{border-right:0}
+.proof h3{font-size:20px;margin:12px 0 8px;font-weight:600}
+.proof p{color:var(--muted);font-size:16px}
+.tag{display:inline-block;border:1px solid var(--red-text);color:var(--red-text);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px}
+.note{margin-top:20px;max-width:70ch;color:var(--muted);font-size:15px}
+@media(max-width:900px){.proof{grid-template-columns:1fr}.proof article{border-right:0;border-bottom:1px solid var(--line)}.proof article:last-child{border-bottom:0}}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:22px 0;font-size:clamp(18px,2.2vw,24px);font-weight:500;letter-spacing:-.01em;display:flex;justify-content:space-between;gap:20px;min-height:48px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--red-text);font-family:var(--mono);flex:none}
+details[open] summary::after{content:"\2212"}
+details p{color:var(--muted);max-width:68ch;padding:0 0 24px}
+.faq{max-width:900px}
+.cta{text-align:left}
+.cta h2{max-width:14ch}
+footer{padding:40px 0 56px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:24px 64px;justify-content:space-between}
+footer p,footer a{font-size:15px;color:var(--muted)}
+footer a:hover{color:var(--fg)}
+.rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none;transition:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="SparkV home">Spark<i>V</i></a>
+    <nav aria-label="Primary">
+      <a href="#services">Services</a><a href="#process">Process</a><a href="#proof">Outcomes</a><a href="#faq">FAQ</a>
+      <a class="cta-s" href="#contact">Start a project</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <p class="mono"><b>/</b> Software, AI and automation studio</p>
+    <h1>We build the systems <em>behind</em> the business.</h1>
+    <p class="lede"><strong>Websites, custom software, AI agents and automation</strong>, engineered from the business goal outward, so the interface, backend and data work as one product.</p>
+    <div class="actions">
+      <a class="btn" href="#contact">Start a project <span aria-hidden="true">&rarr;</span></a>
+      <a class="btn ghost" href="#services">See what we build</a>
+    </div>
+    <div class="meta">
+      <div><p class="mono">Approach</p><p>Start from the goal, not the tech.</p></div>
+      <div><p class="mono">Delivery</p><p>Small, testable releases.</p></div>
+      <div><p class="mono">Oversight</p><p>Humans stay in the loop.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <p class="mono"><b>01</b> Services</p>
+    <h2>Four ways we put software to work.</h2>
+    <div class="grid">
+      <div class="cell rv"><span class="mono">01</span><h3>Web &amp; mobile development</h3><p>Websites, web applications, and iOS, Android and cross-platform apps on a secure, observable foundation.</p><ul><li>Websites and web apps</li><li>SaaS platforms</li><li>Mobile apps</li></ul><a href="#contact">Discuss this</a></div>
+      <div class="cell rv"><span class="mono">02</span><h3>Custom software</h3><p>Web products, internal tools, APIs and backend systems engineered to last.</p><ul><li>Internal tools</li><li>APIs and backends</li><li>Modernization</li></ul><a href="#contact">Discuss this</a></div>
+      <div class="cell rv"><span class="mono">03</span><h3>AI agents</h3><p>Specialized agents that research, support, qualify, coordinate and execute, with human oversight.</p><ul><li>Sales and support</li><li>Research</li><li>Voice agents</li></ul><a href="#contact">Discuss this</a></div>
+      <div class="cell rv"><span class="mono">04</span><h3>AI automation</h3><p>AI copilots, RAG, document intelligence and workflows connected to the tools you already use.</p><ul><li>RAG and copilots</li><li>Workflows</li><li>Integrations</li></ul><a href="#contact">Discuss this</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <p class="mono"><b>02</b> Process</p>
+    <h2>Six steps, no black box.</h2>
+    <ol class="steps">
+      <li class="rv"><span class="mono">01</span><h3>Discover</h3><p>Map the business goal, constraints, users and existing systems before choosing technology.</p></li>
+      <li class="rv"><span class="mono">02</span><h3>Design</h3><p>Turn the problem into a clear product and technical architecture.</p></li>
+      <li class="rv"><span class="mono">03</span><h3>Build</h3><p>Ship small, testable releases so quality stays visible and decisions stay reversible.</p></li>
+      <li class="rv"><span class="mono">04</span><h3>Integrate</h3><p>Connect data, APIs, AI models and the tools your team already relies on.</p></li>
+      <li class="rv"><span class="mono">05</span><h3>Launch</h3><p>Production readiness includes security, observability, performance and handoff.</p></li>
+      <li class="rv"><span class="mono">06</span><h3>Improve</h3><p>Learn from real usage, remove friction, and extend what creates value.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <p class="mono"><b>03</b> Outcomes</p>
+    <h2>What good looks like.</h2>
+    <div class="proof">
+      <article class="rv"><span class="tag">Concept</span><h3>Spreadsheets to one system</h3><p>Illustrative: manual processes spread across spreadsheets and inboxes consolidated into a single application with roles and an audit trail.</p></article>
+      <article class="rv"><span class="tag">Concept</span><h3>Lead to follow-up, drafted</h3><p>Illustrative flow: lead captured, account researched, qualified, CRM updated, follow-up drafted for a human to approve.</p></article>
+      <article class="rv"><span class="tag">Concept</span><h3>Calls that book themselves</h3><p>Illustrative flow: call connected, intent detected, tools invoked, appointment booked, summary sent.</p></article>
+    </div>
+    <p class="note">These are concept scenarios, not case studies. They name no clients and quote no metrics. Verified case studies replace this section once SparkV has permission to publish them.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <p class="mono"><b>04</b> FAQ</p>
+    <h2>Straight answers.</h2>
+    <div class="faq">
+      <details><summary>How much does a project cost and how long does it take?</summary><p>It depends on scope, integrations, security and rollout needs, so SparkV does not publish fixed prices or timelines. Describe the problem, the current workflow and the outcome you want, and SparkV will respond with a focused technical path forward.</p></details>
+      <details><summary>How do I start a project with SparkV?</summary><p>Use the project form or email us. Share what you want to build, automate or improve, including the current workflow and what success looks like.</p></details>
+      <details><summary>Do AI agents act without human oversight?</summary><p>No. Agents are designed to research, support, qualify, coordinate and execute with human oversight.</p></details>
+      <details><summary>Can you connect to the tools we already use?</summary><p>Yes. Integration is a dedicated step: data, APIs, AI models and the tools your team already relies on.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="cta">
+  <div class="wrap">
+    <p class="mono"><b>05</b> Contact</p>
+    <h2>Tell us what to build.</h2>
+    <p class="lede">Share the problem, the current workflow and what success looks like. We reply with a focused technical path forward.</p>
+    <div class="actions"><a class="btn" href="mailto:sparkv.info@gmail.com">sparkv.info@gmail.com <span aria-hidden="true">&rarr;</span></a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><a class="logo" href="#top">Spark<i>V</i></a><p>Software, AI and automation studio.</p></div>
+    <div><p class="mono">Contact</p><p><a href="mailto:sparkv.info@gmail.com">sparkv.info@gmail.com</a></p><p>Telangana, India</p></div>
+    <p>&copy; SparkV. Design mockup, Option A.</p>
+  </div>
+</footer>
+<script>
+(function(){
+  var els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>

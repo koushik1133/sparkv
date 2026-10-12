@@ -10,6 +10,9 @@
     "_comment": "Checked by scripts/check-budgets.mjs from the .next build output, no browser. Sizes are gzip bytes of files referenced by the prerendered homepage HTML.",
     "homepageFirstLoadJsGzipBytes": 200000,
     "totalCssGzipBytes": 40000,
+    "_comment_v1": "Dual-site: the budgets above apply to BOTH the V1 homepage (/) and the V2 homepage (/2), measured per page. v1BaselineJsGzipBytes is the V1 homepage first-load JS measured on `main` (single-site build, 192857); V1 may exceed it by at most v1BaselineToleranceBytes.",
+    "v1BaselineJsGzipBytes": 192857,
+    "v1BaselineToleranceBytes": 1024,
     "fontFiles": 0,
     "publicImageBytes": 1700000
   },

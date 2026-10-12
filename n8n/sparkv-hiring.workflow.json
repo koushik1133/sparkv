@@ -1,0 +1,715 @@
+{
+  "name": "SparkV Hiring Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sparkv-apply",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "n01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "sparkv-apply"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verify X-SparkV-Signature = hex HMAC-SHA256(raw body, secret). Constant-time compare.\n// Needs env: NODE_FUNCTION_ALLOW_BUILTIN=crypto and HIRING_WEBHOOK_SECRET readable ($env).\nconst crypto = require('crypto');\nconst item = $input.first();\nconst secret = $env.HIRING_WEBHOOK_SECRET;\nif (!secret) throw new Error('HIRING_WEBHOOK_SECRET is not set in the n8n environment');\nconst headers = item.json.headers || {};\nconst sig = String(headers['x-sparkv-signature'] || '').trim().toLowerCase();\nconst raw = await this.helpers.getBinaryDataBuffer(0, 'data'); // Webhook option \"Raw Body\" = on\nconst expected = crypto.createHmac('sha256', secret).update(raw).digest('hex');\nlet valid = false;\nif (/^[0-9a-f]{64}$/.test(sig)) {\n  valid = crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(expected, 'hex'));\n}\nif (!valid) return [{ json: { valid: false } }];\nconst p = JSON.parse(raw.toString('utf8'));\nif (p.event !== 'application.received' || !p.applicationId || !p.email || !p.jobSlug) {\n  return [{ json: { valid: false, reason: 'unexpected payload' } }];\n}\nconst l = p.links || {};\nconst links = ['linkedin', 'portfolio', 'github', 'other'].filter(k => l[k]).map(k => k + ': ' + l[k]).join(' | ');\nreturn [{ json: { valid: true, ...p, linksText: links, emailKey: (p.email + '|' + p.jobSlug).toLowerCase() } }];"
+      },
+      "id": "n02",
+      "name": "Verify Signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "n03",
+      "name": "Signature Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: 'invalid signature' } }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "n04",
+      "name": "Respond 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applications"
+        },
+        "options": {}
+      },
+      "id": "n05",
+      "name": "Read Existing Rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        -60
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE: Google Sheets account"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compare incoming application against existing sheet rows (email + jobSlug).\nconst incoming = $('Verify Signature').first().json;\nconst rows = $input.all().map(i => i.json);\nconst dup = rows.find(r =>\n  String(r.email || '').toLowerCase() === incoming.email.toLowerCase() &&\n  String(r.jobSlug || '') === incoming.jobSlug &&\n  String(r.applicationId || '') !== incoming.applicationId\n);\n// Also treat the same applicationId as a replay.\nconst replay = rows.some(r => String(r.applicationId || '') === incoming.applicationId);\nreturn [{ json: { ...incoming, duplicate: Boolean(dup) || replay, duplicateOf: dup ? dup.applicationId : (replay ? incoming.applicationId : '') } }];"
+      },
+      "id": "n06",
+      "name": "Dedupe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.duplicate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "n07",
+      "name": "Is Duplicate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, duplicate: true } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "n08",
+      "name": "Respond Duplicate",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applications"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "applicationId": "={{ $json.applicationId }}",
+            "receivedAt": "={{ $json.receivedAt }}",
+            "jobSlug": "={{ $json.jobSlug }}",
+            "jobTitle": "={{ $json.jobTitle }}",
+            "name": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "phone": "={{ $json.phone }}",
+            "location": "={{ $json.location }}",
+            "links": "={{ $json.linksText }}",
+            "noticePeriod": "={{ $json.noticePeriod }}",
+            "note": "={{ $json.note }}",
+            "resumeFilename": "={{ $json.resumeFilename }}",
+            "status": "received",
+            "owner": "HR",
+            "lastUpdate": "={{ $now.toISO() }}",
+            "nextAction": "Screen within 3 business days",
+            "score": "",
+            "notes": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "applicationId",
+              "displayName": "applicationId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "receivedAt",
+              "displayName": "receivedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobSlug",
+              "displayName": "jobSlug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "links",
+              "displayName": "links",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "noticePeriod",
+              "displayName": "noticePeriod",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "note",
+              "displayName": "note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resumeFilename",
+              "displayName": "resumeFilename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lastUpdate",
+              "displayName": "lastUpdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nextAction",
+              "displayName": "nextAction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n09",
+      "name": "Append to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1320,
+        -140
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE: Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "REPLACE_WITH_HR_EMAIL",
+        "subject": "=New application: {{ $('Dedupe').first().json.jobTitle }} - {{ $('Dedupe').first().json.name }} ({{ $('Dedupe').first().json.applicationId }})",
+        "emailType": "html",
+        "message": "=<p><b>{{ $('Dedupe').first().json.name }}</b> applied for <b>{{ $('Dedupe').first().json.jobTitle }}</b>.</p><p>ID: {{ $('Dedupe').first().json.applicationId }}<br>Email: {{ $('Dedupe').first().json.email }}<br>Location: {{ $('Dedupe').first().json.location }}<br>Notice period: {{ $('Dedupe').first().json.noticePeriod }}<br>Links: {{ $('Dedupe').first().json.linksText }}</p><p>Resume file: {{ $('Dedupe').first().json.resumeFilename }} (attached to the careers inbox email).</p><p>Target: first human response within 3 business days. Update the row in the SparkV Hiring Pipeline sheet.</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "n10",
+      "name": "Notify HR (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1540,
+        -140
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE: Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "n11",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "n12",
+      "name": "Daily 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applications"
+        },
+        "options": {}
+      },
+      "id": "n13",
+      "name": "Read Pipeline",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        220,
+        420
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE: Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Flag: status 'received' older than 3 days, or any open stage idle > 7 days.\nconst now = Date.now(), DAY = 86400000;\nconst closed = ['hired', 'rejected', 'withdrawn'];\nconst t = v => { const n = Date.parse(v); return Number.isNaN(n) ? null : n; };\nconst flagged = [];\nfor (const { json: r } of $input.all()) {\n  const status = String(r.status || '').toLowerCase().trim();\n  if (!r.applicationId || closed.includes(status)) continue;\n  const rec = t(r.receivedAt);\n  const last = t(r.lastUpdate) ?? rec;\n  const reasons = [];\n  if (status === 'received' && rec !== null && now - rec > 3 * DAY) reasons.push('no first response in ' + Math.floor((now - rec) / DAY) + ' days');\n  if (last !== null && now - last > 7 * DAY) reasons.push('idle ' + Math.floor((now - last) / DAY) + ' days in ' + (status || 'unknown'));\n  if (reasons.length) flagged.push({ id: r.applicationId, name: r.name, job: r.jobTitle, status, owner: r.owner || 'unassigned', reasons: reasons.join('; ') });\n}\nconst esc = s => String(s ?? '').replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c]));\nconst html = '<p>' + flagged.length + ' application(s) need attention.</p><ul>' +\n  flagged.map(f => '<li><b>' + esc(f.id) + '</b> ' + esc(f.name) + ' - ' + esc(f.job) + ' [' + esc(f.status) + ', owner: ' + esc(f.owner) + ']: ' + esc(f.reasons) + '</li>').join('') + '</ul>';\nreturn [{ json: { count: flagged.length, html } }];"
+      },
+      "id": "n14",
+      "name": "Find Stale",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "n15",
+      "name": "Anything Stale?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "REPLACE_WITH_HR_EMAIL",
+        "subject": "=SparkV hiring digest: {{ $json.count }} need attention",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "n16",
+      "name": "Send Digest (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        400
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE: Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Signature": {
+      "main": [
+        [
+          {
+            "node": "Signature Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signature Valid?": {
+      "main": [
+        [
+          {
+            "node": "Read Existing Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 401",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing Rows": {
+      "main": [
+        [
+          {
+            "node": "Dedupe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedupe": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate?": {
+      "main": [
+        [
+          {
+            "node": "Respond Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Notify HR (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify HR (Gmail)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily 9am": {
+      "main": [
+        [
+          {
+            "node": "Read Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Find Stale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Stale": {
+      "main": [
+        [
+          {
+            "node": "Anything Stale?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anything Stale?": {
+      "main": [
+        [
+          {
+            "node": "Send Digest (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

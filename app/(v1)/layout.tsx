@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: DEFAULT_TITLE,
     description: SITE_DESCRIPTION,
-    images: [OG_IMAGE],
+    images: [{ ...OG_IMAGE, type: "image/png" }],
   },
   twitter: {
     card: "summary_large_image",
