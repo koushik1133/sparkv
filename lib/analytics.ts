@@ -1,6 +1,6 @@
 // Thin, fail-safe wrapper around @vercel/analytics `track`. Never throws, never sends
 // personal data: callers pass only fixed event names and coarse, non-personal properties.
-export type EventName = "cta_click" | "email_click" | "outbound_click" | "lead_submitted" | "service_view";
+export type EventName = "cta_click" | "email_click" | "outbound_click" | "lead_submitted" | "application_submitted" | "service_view";
 type Props = Record<string, string | number | boolean | null>;
 
 export function trackEvent(name: EventName, props?: Props): void {
