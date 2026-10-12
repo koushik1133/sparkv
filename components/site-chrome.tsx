@@ -19,6 +19,7 @@ export function SiteHeader() {
         <Link href="/#work">Work</Link>
         <Link href="/#process">Process</Link>
         <Link href="/#about">About</Link>
+        <Link href="/careers">Careers</Link>
       </nav>
       <div className="header-actions">
         <ThemeToggle />
@@ -31,6 +32,7 @@ export function SiteHeader() {
           <Link href="/#work">Work</Link>
           <Link href="/#process">Process</Link>
           <Link href="/#about">About</Link>
+          <Link href="/careers">Careers</Link>
           <Link href="/#contact">Contact</Link>
         </SubMenu>
       </div>
@@ -80,6 +82,7 @@ export function SiteFooter() {
           <Link href="/#process">Process</Link>
           <Link href="/#about">About</Link>
           <Link href="/#contact">Contact</Link>
+          <Link href="/careers">Careers</Link>
           <Link href="/privacy">Privacy</Link>
         </div>
         <FooterFollow />
