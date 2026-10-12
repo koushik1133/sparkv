@@ -81,6 +81,8 @@ export function SiteFooter() {
           <Link href="/#about">About</Link>
           <Link href="/#contact">Contact</Link>
           <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+          <Link href="/cookies">Cookies</Link>
         </div>
         <FooterFollow />
         <Link href="/" className="back-top">
